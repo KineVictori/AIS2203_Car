@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
 #include "LidarUtils.hpp"
-#include "../../src/Lidar/LidarUtils.hpp"
+#include "../../include/Lidar/LidarUtils.hpp"
 
 LidarUtils lidar(0.0f, 40.0f); // center = 0 deg, width = 40 deg
 
