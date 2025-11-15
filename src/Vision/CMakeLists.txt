@@ -16,5 +16,5 @@ set(SHARED_SOURCES
 
 add_library(visionLib ${SHARED_SOURCES})
 target_link_libraries(visionLib PUBLIC ${OpenCV_LIBRARIES} simple_socket)
-target_link_libraries(test PRIVATE Threads::Threads)
+target_link_libraries(visionLib PRIVATE Threads::Threads)
 target_include_directories(visionLib PUBLIC ${CMAKE_SOURCE_DIR}/include)
