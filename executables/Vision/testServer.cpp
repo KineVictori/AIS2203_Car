@@ -1,5 +1,4 @@
 
-#include <opencv2/opencv.hpp>
 #include "Vision/Vision.hpp"
 
 int main() {
