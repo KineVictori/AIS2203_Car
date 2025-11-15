@@ -2,7 +2,7 @@
 #ifndef LIDAR_HPP
 #define LIDAR_HPP
 
-
+#include <sensor_msgs/LaserScan.h>
 
 class LidarUtils {
 

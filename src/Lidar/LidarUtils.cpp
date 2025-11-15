@@ -14,8 +14,8 @@ void LidarUtils::updateScan(const sensor_msgs::LaserScan &scan) {
 }
 
 void LidarUtils::setSector(float center_angle_deg, float sector_width_deg) {
-    center_angle_deg = center_angle_deg;
-    sector_width_deg = sector_width_deg;
+    this->center_angle_deg = center_angle_deg;
+    this->sector_width_deg = sector_width_deg;
 }
 
 float LidarUtils::minDistInSector() const {
