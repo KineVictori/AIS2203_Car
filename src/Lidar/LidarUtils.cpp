@@ -1,5 +1,5 @@
 
-#include "lidarUtils.hpp"
+#include "Lidar/LidarUtils.hpp"
 
 #include <cmath>
 #include <sensor_msgs/LaserScan.h>
