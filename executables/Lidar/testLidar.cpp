@@ -2,7 +2,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include "Lidar/LidarUtils.hpp"
 
-LidarUtils lidar(0.0f, 40.0f); // center = 0 deg, width = 40 deg
+LidarUtils lidar(80.0f, 5.0f); // center = 0 deg, width = 40 deg
 
 void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan) {
     lidar.updateScan(*scan);
