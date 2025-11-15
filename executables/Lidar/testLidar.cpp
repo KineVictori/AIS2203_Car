@@ -4,7 +4,7 @@
 
 LidarUtils lidar(0.0f, 40.0f); // center = 0 deg, width = 40 deg
 
-void scanCallback(const sensor_msgs::LidarScan::ConstPtr& scan) {
+void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan) {
     lidar.updateScan(*scan);
 
     float min_dist = lidar.minDistInSector();
