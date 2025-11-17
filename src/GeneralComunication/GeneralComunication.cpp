@@ -64,9 +64,12 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 	try {
 		while (!_stopFlag) {
 			int bytesRead = 0;
+			std::cout << "Waiting for data";
 			while (bytesRead < 1 && !_stopFlag) {
 				bytesRead = conn->read(buffer);
+				std::cout << ".";
 			}
+			std::cout << "\n";
 
 			if (_stopFlag) {
 				std::cout << "Closing connection.. bytesread: " << bytesRead << " | stopFlag: " << _stopFlag << std::endl;
