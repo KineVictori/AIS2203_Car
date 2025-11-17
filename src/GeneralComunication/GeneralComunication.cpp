@@ -84,6 +84,8 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 			if (ix == _masterIx) {
 				std::lock_guard lock(_dataMutex);
 				_data.fromJson(msg);
+
+				std::cout << "Is master!" << std::endl;
 			}
 
 			std::string out;
@@ -109,7 +111,7 @@ void GeneralComunication::loggData() {
 			std::cout << "Data: " << _data.toJson() << std::endl;
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}
 }
 
