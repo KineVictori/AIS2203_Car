@@ -64,11 +64,11 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 	try {
 		while (!_stopFlag) {
 			int bytesRead = 0;
-			while (bytesRead == 0 && !_stopFlag) {
-				bytesRead += conn->read(buffer);
+			while (bytesRead < 1 && !_stopFlag) {
+				bytesRead = conn->read(buffer);
 			}
 
-			if (bytesRead == -1 || _stopFlag) {
+			if (_stopFlag) {
 				std::cout << "Closing connection.. bytesread: " << bytesRead << " | stopFlag: " << _stopFlag << std::endl;
 				break;
 			}
