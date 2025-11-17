@@ -80,6 +80,9 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 			}
 
 			std::string msg(buffer.begin(), buffer.begin() + bytesRead);
+			if (msg == "STOP") {
+				break;
+			}
 
 			if (ix == _masterIx) {
 				std::lock_guard lock(_dataMutex);
