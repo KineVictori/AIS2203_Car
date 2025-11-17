@@ -69,7 +69,7 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 			}
 
 			if (bytesRead == -1 || _stopFlag) {
-				std::cout << "Closing connection.." << std::endl;
+				std::cout << "Closing connection.. bytesread: " << bytesRead << " | stopFlag: " << _stopFlag << std::endl;
 				break;
 			}
 
