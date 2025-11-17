@@ -23,6 +23,7 @@ float LidarUtils::minDistInSector() const {
         return scan_.range_max;
 
     float min_dist = scan_.range_max;
+    // convert angles from rad to deg
     float angle_min_deg = scan_.angle_min * 180.0f / M_PI;
     float angle_inc_deg = scan_.angle_increment * 180 / M_PI;
 
