@@ -2,7 +2,6 @@
 #ifndef AIS2203_CAR_GENERALCOMUNICATION_HPP
 #define AIS2203_CAR_GENERALCOMUNICATION_HPP
 
-#include <iostream>
 #include <vector>
 
 #include <mutex>

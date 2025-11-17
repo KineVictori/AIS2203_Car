@@ -46,19 +46,13 @@ struct Steering {
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(Steering, steering, throttle, steering_bias, steering_gain, throttle_gain);
 };
 
-struct RecievingData {
+struct DataStruct {
 	DrivingMode driving_mode = FROM_GUI;
-	Steering steering{};
-
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(RecievingData, driving_mode, steering);
-};
-
-struct SendingData {
 	Steering steering{};
 	Position car_pos{};
 	std::vector<Person> persons;
 
-	NLOHMANN_DEFINE_TYPE_INTRUSIVE(SendingData, steering, car_pos, persons);
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(DataStruct, driving_mode, steering, car_pos, persons);
 };
 
 class Data {
@@ -67,8 +61,7 @@ public:
 	std::string toJson() const;
 
 private:
-	RecievingData _recievingData{};
-	SendingData _sensingData{};
+	DataStruct _data;
 
 };
 

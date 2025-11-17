@@ -1,6 +1,4 @@
 
-#include <iostream>
-
 #include "GeneralComunication/Data.hpp"
 
 void Data::fromJson(std::string &val) {
@@ -9,22 +7,20 @@ void Data::fromJson(std::string &val) {
 	try {
 		obj = nlohmann::json::parse(val);
 	} catch (nlohmann::json::parse_error &e) {
-		std::cerr << "Invalid json, error: " << e.what() << std::endl;
 		return;
 	}
 
-	_recievingData.steering = obj.value("steering", Steering{});
-	_recievingData.driving_mode = obj.value("driving_move", DrivingMode::UNKNOWN);
-
-	_sensingData.steering = _recievingData.steering;
+	_data.driving_mode = obj.value("driving_move", DrivingMode::UNKNOWN);
+	_data.steering = obj.value("steering", Steering{});
 }
 
 std::string Data::toJson() const {
 	nlohmann::json obj;
 
-	obj["car_pos"] = _sensingData.car_pos;
-	obj["persons"] = _sensingData.persons;
-	obj["steering"] = _sensingData.steering;
+	obj["driving_mode"] = _data.driving_mode;
+	obj["steering"] = _data.steering;
+	obj["car_pos"] = _data.car_pos;
+	obj["persons"] = _data.persons;
 
 	return obj.dump();
 }
