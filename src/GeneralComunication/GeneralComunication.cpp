@@ -74,6 +74,7 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 			}
 
 			std::string msg(buffer.begin(), buffer.begin() + bytesRead);
+			std::cout << msg << std::endl;
 
 			if (ix == _masterIx) {
 				std::lock_guard lock(_dataMutex);
@@ -86,6 +87,7 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 				out = _data.toJson();
 			}
 			conn->write(out);
+			std::cout << out << std::endl;
 			buffer.clear();
 		}
 	} catch (const std::exception &e) {
