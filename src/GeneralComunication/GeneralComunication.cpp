@@ -9,7 +9,7 @@ GeneralComunication::GeneralComunication(int port)
 GeneralComunication::~GeneralComunication() {
 	std::cout << "Stopping" << std::endl;
 	_stopFlag = true;
-	_server.close(); // Probably not good since this happens at the same time as _server.accept()
+	_server.close();
 
 	std::cout << "_server.close()" << std::endl;
 	if (_serverThread.joinable()) {
@@ -69,6 +69,7 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 			}
 
 			if (bytesRead == -1 || _stopFlag) {
+				std::cout << "Closing connection.." << std::endl;
 				break;
 			}
 
@@ -87,7 +88,9 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 			conn->write(out);
 			buffer.clear();
 		}
-	} catch (const std::exception &e) {}; // Probably the connection being closed by the client..?
+	} catch (const std::exception &e) {
+		std::cout << e.what() << std::endl;
+	}; // Probably the connection being closed by the client..?
 
 	if (ix == _masterIx) {
 		_masterIx = 0;
