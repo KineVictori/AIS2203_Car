@@ -1,4 +1,6 @@
 // Based on standard ROS C++ API and documentation here: https://wiki.ros.org/sensor_msgs
+// Dobbeltsjekk bruken min av & og *, ikke 100% kontroll der,
+// brukte som oftest det som kom opp som forslag
 
 #include "../../include/RobotSensors/RobotSensors.hpp"
 
