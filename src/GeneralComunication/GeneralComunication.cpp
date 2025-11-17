@@ -62,7 +62,7 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 				bytesRead = conn->read(buffer);
 			}
 
-			if (_stopFlag) {
+			if (_stopFlag || (bytesRead < 1)) {
 				break;
 			}
 
