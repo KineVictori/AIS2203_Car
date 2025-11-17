@@ -15,11 +15,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SimpleSocket)
 
+find_package(Threads REQUIRED)
+
 set(SOURCES
         GeneralComunication.cpp
         Data.cpp
 )
 
 add_library(generalComLib ${SOURCES})
-target_link_libraries(generalComLib PUBLIC nlohmann_json simple_socket)
+target_link_libraries(generalComLib PUBLIC nlohmann_json simple_socket Threads::Threads)
 target_include_directories(generalComLib PUBLIC ${CMAKE_SOURCE_DIR}/include)
