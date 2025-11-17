@@ -1,8 +1,9 @@
 
 #include "GeneralComunication/GeneralComunication.hpp"
 
-GeneralComunication::GeneralComunication(int port)
-	: _server(port), _serverThread(&GeneralComunication::acceptConnections, this){
+GeneralComunication::GeneralComunication(const int port)
+	: _loggingThread(&GeneralComunication::loggData, this), _server(port),
+	_serverThread(&GeneralComunication::acceptConnections, this) {
 
 }
 
@@ -16,6 +17,12 @@ GeneralComunication::~GeneralComunication() {
 		std::cout << "server thread joinable" << std::endl;
 		_serverThread.join();
 		std::cout << "server thread joined" << std::endl;
+	}
+
+	if (_loggingThread.joinable()) {
+		std::cout << "logging thread joinable" << std::endl;
+		_loggingThread.join();
+		std::cout << "logging thread joined" << std::endl;
 	}
 
 	std::cout << "checking conn threads" << std::endl;
@@ -67,14 +74,12 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 			while (bytesRead < 1 && !_stopFlag) {
 				bytesRead = conn->read(buffer);
 			}
-			std::cout << "\n";
 
 			if (_stopFlag) {
 				break;
 			}
 
 			std::string msg(buffer.begin(), buffer.begin() + bytesRead);
-			std::cout << msg << std::endl;
 
 			if (ix == _masterIx) {
 				std::lock_guard lock(_dataMutex);
@@ -86,8 +91,7 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 				std::lock_guard lock(_dataMutex);
 				out = _data.toJson();
 			}
-			conn->write(msg); // TODO: revert back to conn->write(out), this is just for test!
-			std::cout << out << std::endl;
+			conn->write(out);
 		}
 	} catch (const std::exception &e) {
 		std::cout << e.what() << std::endl;
@@ -97,3 +101,15 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 		_masterIx = 0;
 	}
 }
+
+void GeneralComunication::loggData() {
+	while (!_stopFlag) {
+		{
+			std::lock_guard lock(_coutMutex);
+			std::cout << "Data: " << _data.toJson() << std::endl;
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+}
+

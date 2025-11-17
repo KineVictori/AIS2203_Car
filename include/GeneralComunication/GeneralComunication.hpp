@@ -24,8 +24,11 @@ public:
 
 private:
 	void commHandler(std::unique_ptr<simple_socket::SimpleConnection> conn, int ix);
-
 	void acceptConnections();
+	void loggData();
+
+	std::thread _loggingThread;
+	std::mutex _coutMutex;
 
 	std::mutex _dataMutex;
 	Data _data;
