@@ -48,7 +48,6 @@ void GeneralComunication::setData(const Data &data) {
 	_data = data;
 }
 
-
 void GeneralComunication::acceptConnections() {
 	try {
 		int threadIx = 1;
@@ -58,6 +57,7 @@ void GeneralComunication::acceptConnections() {
 
 			// If no thread is master, the new thread will be master.
 			if (_masterIx == 0) {
+				std::cout << "Setting new master" << std::endl;
 				_masterIx = threadIx;
 			}
 
@@ -84,8 +84,6 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 			if (ix == _masterIx) {
 				std::lock_guard lock(_dataMutex);
 				_data.fromJson(msg);
-
-				std::cout << "Is master!" << std::endl;
 			}
 
 			std::string out;
@@ -101,6 +99,7 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 
 	if (ix == _masterIx) {
 		_masterIx = 0;
+		std::cout << "Master retires" << std::endl;
 	}
 }
 
