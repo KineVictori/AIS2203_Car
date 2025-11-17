@@ -64,7 +64,14 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 	try {
 		while (!_stopFlag) {
 			int bytesRead = 0;
-			bytesRead += conn->read(buffer);
+			while (bytesRead == 0 && !_stopFlag) {
+				bytesRead += conn->read(buffer);
+			}
+
+			if (bytesRead == -1 || _stopFlag) {
+				break;
+			}
+
 			std::string msg(buffer.begin(), buffer.begin() + bytesRead);
 
 			if (ix == _masterIx) {
