@@ -71,7 +71,7 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 		while (!_stopFlag) {
 			std::vector<unsigned char> buffer(2048);
 			int bytesRead = 0;
-			while (bytesRead < 1 && !_stopFlag) {
+			while (bytesRead == 0 && !_stopFlag) {
 				bytesRead = conn->read(buffer);
 			}
 
