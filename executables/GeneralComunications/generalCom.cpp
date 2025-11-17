@@ -1,6 +1,7 @@
 
+#include <iostream>
+
 #include "GeneralComunication/GeneralComunication.hpp"
-#include "GeneralComunication/Data.hpp"
 
 int main() {
 
