@@ -60,14 +60,13 @@ void GeneralComunication::acceptConnections() {
 }
 
 void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConnection> conn, int ix) {
-	std::vector<unsigned char> buffer(2048);
 	try {
 		while (!_stopFlag) {
+			std::vector<unsigned char> buffer(2048);
 			int bytesRead = 0;
 			std::cout << "Waiting for data";
 			while (bytesRead < 1 && !_stopFlag) {
 				bytesRead = conn->read(buffer);
-				std::cout << ".";
 			}
 			std::cout << "\n";
 
@@ -91,7 +90,6 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 			}
 			conn->write(out);
 			std::cout << out << std::endl;
-			buffer.clear();
 		}
 	} catch (const std::exception &e) {
 		std::cout << e.what() << std::endl;
