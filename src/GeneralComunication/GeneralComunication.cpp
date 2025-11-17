@@ -64,14 +64,12 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 		while (!_stopFlag) {
 			std::vector<unsigned char> buffer(2048);
 			int bytesRead = 0;
-			std::cout << "Waiting for data";
 			while (bytesRead < 1 && !_stopFlag) {
 				bytesRead = conn->read(buffer);
 			}
 			std::cout << "\n";
 
 			if (_stopFlag) {
-				std::cout << "Closing connection.. bytesread: " << bytesRead << " | stopFlag: " << _stopFlag << std::endl;
 				break;
 			}
 
@@ -88,7 +86,7 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 				std::lock_guard lock(_dataMutex);
 				out = _data.toJson();
 			}
-			conn->write(out);
+			conn->write(msg); // TODO: revert back to conn->write(out), this is just for test!
 			std::cout << out << std::endl;
 		}
 	} catch (const std::exception &e) {
