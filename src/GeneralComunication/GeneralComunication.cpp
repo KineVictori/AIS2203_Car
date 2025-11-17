@@ -9,7 +9,7 @@ GeneralComunication::GeneralComunication(int port)
 GeneralComunication::~GeneralComunication() {
 	std::cout << "Stopping" << std::endl;
 	_stopFlag = true;
-	_server.close(); // Probably not good since this happens at the same time as _server.accept()
+	_server.close();
 
 	std::cout << "_server.close()" << std::endl;
 	if (_serverThread.joinable()) {
@@ -60,19 +60,21 @@ void GeneralComunication::acceptConnections() {
 }
 
 void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConnection> conn, int ix) {
-	std::vector<unsigned char> buffer(2048);
 	try {
 		while (!_stopFlag) {
+			std::vector<unsigned char> buffer(2048);
 			int bytesRead = 0;
-			while (bytesRead == 0 && !_stopFlag) {
-				bytesRead += conn->read(buffer);
+			while (bytesRead < 1 && !_stopFlag) {
+				bytesRead = conn->read(buffer);
 			}
+			std::cout << "\n";
 
-			if (bytesRead == -1 || _stopFlag) {
+			if (_stopFlag) {
 				break;
 			}
 
 			std::string msg(buffer.begin(), buffer.begin() + bytesRead);
+			std::cout << msg << std::endl;
 
 			if (ix == _masterIx) {
 				std::lock_guard lock(_dataMutex);
@@ -84,10 +86,12 @@ void GeneralComunication::commHandler(std::unique_ptr<simple_socket::SimpleConne
 				std::lock_guard lock(_dataMutex);
 				out = _data.toJson();
 			}
-			conn->write(out);
-			buffer.clear();
+			conn->write(msg); // TODO: revert back to conn->write(out), this is just for test!
+			std::cout << out << std::endl;
 		}
-	} catch (const std::exception &e) {}; // Probably the connection being closed by the client..?
+	} catch (const std::exception &e) {
+		std::cout << e.what() << std::endl;
+	}; // Probably the connection being closed by the client..?
 
 	if (ix == _masterIx) {
 		_masterIx = 0;
