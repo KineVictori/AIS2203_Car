@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(AIS2203_JetRacer)
+project(AIS2203_Car)
 
 set(CMAKE_CXX_STANDARD 17)
 
