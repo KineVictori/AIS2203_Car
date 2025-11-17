@@ -15,6 +15,8 @@ void Data::fromJson(std::string &val) {
 
 	_recievingData.steering = obj.value("steering", Steering{});
 	_recievingData.driving_mode = obj.value("driving_move", DrivingMode::UNKNOWN);
+
+	_sensingData.steering = _recievingData.steering;
 }
 
 std::string Data::toJson() const {
