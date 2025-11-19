@@ -17,7 +17,7 @@ public:
     // Methods to access the latest sensor data
     sensor_msgs::Imu getLatestImu() const;
     sensor_msgs::LaserScan getLatestScan() const;
-    nav_msgs::Odometry getLatestOdometry() const;
+    nav_msgs::Odometry getLatestOdom() const;
 
 private:
     void imuCallback(const sensor_msgs::Imu::ConstPtr &msg);
