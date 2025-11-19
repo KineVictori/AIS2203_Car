@@ -3,9 +3,7 @@
 
 int main() {
 
-    std::cout << "Running" << std::endl;
     Vision vision;
-    std::cout << "Created" << std::endl;
 
     while(!vision.isFinished()) {
         vision.update();
@@ -16,9 +14,6 @@ int main() {
         cv::imshow("CSI Camera", frame);
         if(cv::waitKey(1) == 27) break; // ESC to exit*/
     }
-
-    std::cout << "Finished" << std::endl;
-    std::cout << "B: " << vision.isFinished() << std::endl;
 
     return 0;
 }

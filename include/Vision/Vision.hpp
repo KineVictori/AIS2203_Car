@@ -23,6 +23,7 @@ public:
     bool isFinished();
 
 private:
+    std::mutex _frameMutex;
     cv::VideoCapture _cap;
     cv::Mat _frame;
 

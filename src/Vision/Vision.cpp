@@ -36,6 +36,7 @@ Vision::~Vision() {
 }
 
 void Vision::update() {
+    std::lock_guard lock(_frameMutex);
     _cap >> _frame;
 }
 
@@ -60,8 +61,13 @@ void Vision::socketHandler(std::unique_ptr<simple_socket::SimpleConnection> conn
             cv::imencode(".jpg", frame, buf);
 
             int numBytes = buf.size();
+
+            std::cout << "Write" << std::endl;
+
             conn->write(reinterpret_cast<char*>(&numBytes), sizeof(numBytes)); // send size as int
             conn->write(reinterpret_cast<char*>(buf.data()), buf.size());      // send raw bytes
+
+            std::cout << "Wend" << std::endl;
         }
     } catch (...) {
         // Probably conn has closed from client side, should probably do this in a better way.
