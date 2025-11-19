@@ -29,23 +29,29 @@ def handle_json_payload(payload):
         car.steering_gain = float(state["throttle_gain"])
 
 def handle_client(conn, addr):
-    with conn:
-        buffer = b""
-        while True:
-            data = conn.recv(4096)
-            if not data:
-                break
-            buffer += data
-            while b"\n" in buffer:
-                line, buffer = buffer.split(b"\n", 1)
-                if not line.strip():
-                    continue
-                try:
-                    payload = json.loads(line.decode("utf-8"))
-                    handle_json_payload(payload)
-                    
-                except json.JSONDecodeError:
-                    print(f"[!] Invalid JSON: {line!r}")
+    try:
+        with conn:
+            buffer = b""
+            while True:
+                data = conn.recv(4096)
+                if not data:
+                    break
+                buffer += data
+                while b"\n" in buffer:
+                    line, buffer = buffer.split(b"\n", 1)
+                    if not line.strip():
+                        continue
+                    try:
+                        payload = json.loads(line.decode("utf-8"))
+                        handle_json_payload(payload)
+
+                    except json.JSONDecodeError:
+                        print(f"[!] Invalid JSON: {line!r}")
+    except Exception as e:
+        # The user probably stopped the connection.
+        pass
+
+
 
 def accept_loop():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
