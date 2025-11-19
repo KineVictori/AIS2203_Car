@@ -10,7 +10,7 @@ if(catkin_FOUND)
 
     add_library(robotSensorsLib RobotSensors.cpp)
     target_link_libraries(robotSensorsLib PUBLIC ${catkin_LIBRARIES})
-    target_include_directories(LidarUtils PUBLIC ${catkin_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include)
+    target_include_directories(robotSensorsLib PUBLIC ${catkin_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include)
 
 else()
     message(WARNING "Could not find catkin")
