@@ -8,7 +8,6 @@
 #include <opencv2/opencv.hpp>
 #include <simple_socket/TCPSocket.hpp>
 #include <simple_socket/SimpleConnection.hpp>
-#include <iostream>
 
 #include <atomic>
 
