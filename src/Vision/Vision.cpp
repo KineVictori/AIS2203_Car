@@ -66,7 +66,7 @@ void Vision::socketHandler(std::unique_ptr<simple_socket::SimpleConnection> conn
 
             std::cout << "Wend" << std::endl;
         }
-    } catch (...) {
+    } catch (std::exception &e) {
         // Probably conn has closed from client side, should probably do this in a better way.
         // Could probably get client to send a msg "END" or whatever, then close.
         // TODO: Handle better connection shutdown.
