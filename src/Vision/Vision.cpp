@@ -20,7 +20,7 @@ Vision::Vision(): _server(simple_socket::TCPServer(45678)) {
                 });
                 _connectionThreads.push_back(std::move(t));
             } catch (...) {
-                // ignore
+                std::cout << "Server" << std::endl;
             }
         }
     });
@@ -67,6 +67,8 @@ void Vision::socketHandler(std::unique_ptr<simple_socket::SimpleConnection> conn
         // Probably conn has closed from client side, should probably do this in a better way.
         // Could probably get client to send a msg "END" or whatever, then close.
         // TODO: Handle better connection shutdown.
+
+        std::cout << "Socket" << std::endl;
     }
 
 }
