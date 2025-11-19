@@ -6,10 +6,17 @@
 #include <thread>
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/dnn.hpp>
+
 #include <simple_socket/TCPSocket.hpp>
 #include <simple_socket/SimpleConnection.hpp>
 
 #include <atomic>
+
+enum VisionModel {
+    NONE,
+    POSE
+};
 
 class Vision {
 public:
@@ -37,6 +44,8 @@ private:
 
     std::atomic<bool> _stopFlag = false;
 
+
+    cv::dnn::Net _net;
 };
 
 
