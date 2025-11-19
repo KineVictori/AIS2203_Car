@@ -29,9 +29,12 @@ private:
 
     simple_socket::TCPServer _server;
     std::thread _serverThread;
+    std::thread _stoppingThread;
     std::vector<std::thread> _connectionThreads;
 
     void socketHandler(std::unique_ptr<simple_socket::SimpleConnection> conn);
+    void listenForConnection();
+    void listenForUserStop();
 
     std::atomic<bool> _stopFlag = false;
 

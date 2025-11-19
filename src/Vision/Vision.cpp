@@ -2,7 +2,10 @@
 #include "Vision/Vision.hpp"
 
 
-Vision::Vision(): _server(simple_socket::TCPServer(45678)) {
+Vision::Vision(): _server(simple_socket::TCPServer(45678)),
+    _stoppingThread(&Vision::listenForUserStop, this),
+    _serverThread(&Vision::listenForConnection, this) {
+
     std::string pipeline = "nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, framerate=30/1 ! "
                            "nvvidconv ! videoconvert ! appsink";
     _cap = cv::VideoCapture(pipeline, cv::CAP_GSTREAMER);
@@ -10,17 +13,6 @@ Vision::Vision(): _server(simple_socket::TCPServer(45678)) {
         std::cerr << "Failed to open CSI camera\n";
         isOkay = false;
     }
-
-    _serverThread = std::thread([this]() {
-        try {
-            while (!_stopFlag) {
-                auto conn = _server.accept();
-                _connectionThreads.emplace_back(&Vision::socketHandler, this, std::move(conn));
-            }
-        } catch (const std::exception &e) {
-            std::cout << "Server" << std::endl;
-        }
-    });
 }
 
 Vision::~Vision() {
@@ -28,8 +20,19 @@ Vision::~Vision() {
     _cap.release();
 
     for (auto &t : _connectionThreads) {
-        t.join();
+        if (t.joinable()) {
+            t.join();
+        }
     }
+
+    if (_serverThread.joinable()) {
+        _serverThread.join();
+    }
+
+    if (_stoppingThread.joinable()) {
+        _stoppingThread.join();
+    }
+
 }
 
 void Vision::update() {
@@ -59,28 +62,38 @@ void Vision::socketHandler(std::unique_ptr<simple_socket::SimpleConnection> conn
 
             int numBytes = buf.size();
 
-            std::cout << "Write" << std::endl;
-
             auto b = conn->write(reinterpret_cast<char*>(&numBytes), sizeof(numBytes)); // send size as int
             if (!b) {break;}
             b = conn->write(reinterpret_cast<char*>(buf.data()), buf.size());      // send raw bytes
             if (!b) {break;}
-
-
-
-            std::cout << "Wend" << std::endl;
         }
     } catch (std::exception &e) {
         // Probably conn has closed from client side, should probably do this in a better way.
         // Could probably get client to send a msg "END" or whatever, then close.
         // TODO: Handle better connection shutdown.
-
-        std::cout << "Socket" << std::endl;
     }
 
 }
 
 bool Vision::isFinished() {
     return _stopFlag;
+}
+
+void Vision::listenForUserStop() {
+    std::cout << "Press ENTER to stop server.\n";
+    std::cin.get();
+
+    _stopFlag = true;
+    _server.close();
+}
+
+void Vision::listenForConnection() {
+    try {
+        while (!_stopFlag) {
+            auto conn = _server.accept();
+            _connectionThreads.emplace_back(&Vision::socketHandler, this, std::move(conn));
+        }
+    } catch (const std::exception &e) {
+    }
 }
 
