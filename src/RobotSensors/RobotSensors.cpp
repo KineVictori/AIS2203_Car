@@ -2,7 +2,7 @@
 // Dobbeltsjekk bruken min av & og *, ikke 100% kontroll der,
 // brukte som oftest det som kom opp som forslag
 
-#include "../../include/RobotSensors/RobotSensors.hpp"
+#include "RobotSensors/RobotSensors.hpp"
 
 RobotSensors::RobotSensors(ros::NodeHandle &nh) {
     imu_sub_ = nh.subscribe("/imu/data", 10, &RobotSensors::imuCallback, this);
