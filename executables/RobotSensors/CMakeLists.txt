@@ -1,0 +1,3 @@
+
+add_executable(robotSensor testRobotSensors.cpp)
+target_link_libraries(robotSensor PUBLIC robotSensorsLib)
