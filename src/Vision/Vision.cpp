@@ -12,16 +12,13 @@ Vision::Vision(): _server(simple_socket::TCPServer(45678)) {
     }
 
     _serverThread = std::thread([this]() {
-        while (!_stopFlag) {
-            try {
+        try {
+            while (!_stopFlag) {
                 auto conn = _server.accept();
-                std::thread t([c = std::move(conn), this]() mutable {
-                    socketHandler(std::move(c));
-                });
-                _connectionThreads.push_back(std::move(t));
-            } catch (...) {
-                std::cout << "Server" << std::endl;
+                _connectionThreads.emplace_back(&Vision::socketHandler, this, std::move(conn));
             }
+        } catch (const std::exception &e) {
+            std::cout << "Server" << std::endl;
         }
     });
 }
