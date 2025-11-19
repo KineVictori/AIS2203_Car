@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
         // Access latest data
         sensor_msgs::Imu imu = sensors.getLatestImu();
         sensor_msgs::LaserScan scan = sensors.getLatestScan();
-        nav_msgs::Odometry odom = sensors.getLatestOdometry();
+        nav_msgs::Odometry odom = sensors.getLatestOdom();
 
         // bare tester, endre senere til faktisk bruk
         ROS_INFO_STREAM("IMU Acceleration X: " << imu.linear_acceleration.x);
