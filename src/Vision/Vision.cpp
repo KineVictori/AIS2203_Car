@@ -62,9 +62,9 @@ void Vision::socketHandler(std::unique_ptr<simple_socket::SimpleConnection> conn
             std::cout << "Write" << std::endl;
 
             auto b = conn->write(reinterpret_cast<char*>(&numBytes), sizeof(numBytes)); // send size as int
-            if (b) {break;}
+            if (!b) {break;}
             b = conn->write(reinterpret_cast<char*>(buf.data()), buf.size());      // send raw bytes
-            if (b) {break;}
+            if (!b) {break;}
 
 
 
