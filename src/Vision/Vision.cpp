@@ -86,6 +86,8 @@ bool Vision::isFinished() {
 }
 
 void Vision::listenForUserStop() {
+    return; // Testing
+
     std::cout << "Press ENTER to stop server.\n";
     std::cin.get();
 
