@@ -86,7 +86,7 @@ bool Vision::isFinished() {
 }
 
 void Vision::listenForUserStop() {
-    return; // Testing
+    return; // Running code on boot (by systemd), std::cin will immideatly return.
 
     std::cout << "Press ENTER to stop server.\n";
     std::cin.get();
