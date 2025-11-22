@@ -6,7 +6,7 @@
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "testRobotSensors");
-    ros::NodeHandle n;  // sjekk om kan bruke nh igjen siden den er brukt før
+    ros::NodeHandle n;
 
     RobotSensors sensors(n);
 
