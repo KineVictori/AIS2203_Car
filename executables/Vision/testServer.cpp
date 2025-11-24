@@ -22,7 +22,7 @@ int main() {
 
     Vision vision;
 
-    auto model_path = std::to_string(DATA) + "/ONNXModels/yolo11n.onnx";
+    auto model_path = std::to_string(DATA_PATH) + "/ONNXModels/yolo11n.onnx";
     ModelEstimation modelEstimation{model_path};
 
     while(!vision.isFinished()) {
