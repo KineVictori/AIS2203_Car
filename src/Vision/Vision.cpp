@@ -69,6 +69,24 @@ void Vision::update() {
 
         auto people = visionUtils::decodeYoloPose(outputs);
         std::cout << "Num people: " << people.size() << std::endl;
+
+        std::lock_guard lock(_frameMutex);
+        for (const auto &person : people) {
+            // Draw bounding box
+            cv::rectangle(_frame, person.box, cv::Scalar(0, 255, 0), 2); // green box, thickness=2
+
+            // Optional: draw confidence score
+            std::string text = cv::format("%.2f", person.score);
+            int baseLine = 0;
+            cv::Size labelSize = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
+            cv::Point labelOrigin(person.box.x, person.box.y - 5);
+            cv::putText(_frame, text, labelOrigin, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0,255,0), 1);
+
+            // Optional: draw keypoints
+            for (const auto &kp : person.kp) {
+                cv::circle(_frame, kp.position, 3, cv::Scalar(0, 0, 255), -1); // red keypoints
+            }
+        }
     }
 }
 
