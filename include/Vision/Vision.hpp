@@ -21,6 +21,18 @@ struct BlobSettings {
     bool crop;
 };
 
+void printBlobSettings(const BlobSettings& s) {
+    std::cout << "Blob Settings:\n";
+    std::cout << "  scale   : " << s.scale << "\n";
+    std::cout << "  size    : " << s.size.width << " x " << s.size.height << "\n";
+    std::cout << "  mean    : ["
+              << s.mean[0] << ", "
+              << s.mean[1] << ", "
+              << s.mean[2] << "]\n";
+    std::cout << "  swapRB  : " << (s.swapRB ? "true" : "false") << "\n";
+    std::cout << "  crop    : " << (s.crop ? "true" : "false") << "\n";
+}
+
 enum VisionModel {
     NONE,
     POSE
