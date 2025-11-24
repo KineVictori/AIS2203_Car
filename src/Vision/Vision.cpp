@@ -15,9 +15,8 @@ Vision::Vision(): _server(simple_socket::TCPServer(45678)),
         isOkay = false;
     }
 
-
     _net = cv::dnn::readNetFromONNX(static_cast<std::string>(DATA_PATH) + "/ONNXModels/yolo11n-pose.onnx");
-    _net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
+    _net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
     _net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
 }
 
