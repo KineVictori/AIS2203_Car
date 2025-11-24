@@ -29,6 +29,9 @@ int main() {
         auto frame = vision.getFrame();
 
         try {
+            if (frame.channels() == 4) {
+                cv::cvtColor(frame, frame, cv::COLOR_BGRA2BGR);
+            }
             auto results = modelEstimation.detect(frame);
             printDetections(results);
         } catch (...) {}
