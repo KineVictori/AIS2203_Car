@@ -23,8 +23,8 @@ namespace visionUtils {
     inline std::vector<Person> decodeYoloPose(
         const cv::Mat& output,
         const cv::Size& origSize,   // original frame size
-        float confThreshold = 0.25f,
-        float nmsThreshold = 0.45f)
+        float confThreshold = 0.7f,
+        float nmsThreshold = 0.5f)
     {
         int numPred = output.size[2];  // 8400
         int numVals = output.size[1];  // 56
