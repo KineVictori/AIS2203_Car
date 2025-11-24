@@ -6,14 +6,11 @@
 #include <thread>
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/dnn.hpp>
 
 #include <simple_socket/TCPSocket.hpp>
 #include <simple_socket/SimpleConnection.hpp>
 
 #include <atomic>
-
-#include "utils.hpp"
 
 class Vision {
 public:
@@ -39,10 +36,6 @@ private:
     void listenForUserStop();
 
     std::atomic<bool> _stopFlag = false;
-
-    visionUtils::VisionModel _visionModel = visionUtils::POSE;
-    bool _hasInitializedNet = false;
-    cv::dnn::Net _net;
 };
 
 

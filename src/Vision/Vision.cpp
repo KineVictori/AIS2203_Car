@@ -1,7 +1,5 @@
 
 #include "Vision/Vision.hpp"
-#include "Vision/utils.hpp"
-
 
 Vision::Vision(): _server(simple_socket::TCPServer(45678)),
     _stoppingThread(&Vision::listenForUserStop, this),
@@ -13,10 +11,6 @@ Vision::Vision(): _server(simple_socket::TCPServer(45678)),
     if(!_cap.isOpened()) {
         std::cerr << "Failed to open CSI camera\n";
     }
-
-    _net = cv::dnn::readNetFromONNX(static_cast<std::string>(DATA_PATH) + "/ONNXModels/yolo11n-pose.onnx");
-    _net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
-    _net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
 }
 
 Vision::~Vision() {
@@ -40,54 +34,8 @@ Vision::~Vision() {
 }
 
 void Vision::update() {
-    {
-        std::lock_guard lock(_frameMutex);
-        _cap >> _frame;
-    }
-
-    if (_visionModel == visionUtils::VisionModel::POSE) {
-
-        cv::Mat frame3;
-        if (_frame.channels() == 4) {
-            cv::cvtColor(_frame, frame3, cv::COLOR_BGRA2BGR);
-        } else {
-            frame3 = _frame;
-        }
-
-        cv::Mat blob = cv::dnn::blobFromImage(
-            frame3,
-            1.0 / 255.0,        // scale factor
-            cv::Size(640, 640), // input size
-            cv::Scalar(0.0, 0.0, 0.0), // mean (optional)
-            true,               // swapRB (BGR->RGB)
-            false               // crop
-        );
-
-        _net.setInput(blob);
-        static std::vector<cv::Mat> outputs;
-        _net.forward(outputs, _net.getUnconnectedOutLayersNames());
-
-        auto people = visionUtils::decodeYoloPose(outputs);
-        std::cout << "Num people: " << people.size() << std::endl;
-
-        std::lock_guard lock(_frameMutex);
-        for (const auto &person : people) {
-            // Draw bounding box
-            cv::rectangle(_frame, person.box, cv::Scalar(0, 255, 0), 2); // green box, thickness=2
-
-            // Optional: draw confidence score
-            std::string text = cv::format("%.2f", person.score);
-            int baseLine = 0;
-            cv::Size labelSize = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
-            cv::Point labelOrigin(person.box.x, person.box.y - 5);
-            cv::putText(_frame, text, labelOrigin, cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0,255,0), 1);
-
-            // Optional: draw keypoints
-            for (const auto &kp : person.kp) {
-                cv::circle(_frame, kp.position, 3, cv::Scalar(0, 0, 255), -1); // red keypoints
-            }
-        }
-    }
+    std::lock_guard lock(_frameMutex);
+    _cap >> _frame;
 }
 
 cv::Mat Vision::getFrame() {
