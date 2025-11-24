@@ -16,136 +16,98 @@ Inference::Inference(const std::string &onnxModelPath, const cv::Size &modelInpu
 
 std::vector<Detection> Inference::runInference(const cv::Mat &input)
 {
+    // 1️⃣ Preprocess image (letterbox)
     cv::Mat modelInput = input;
-    int pad_x, pad_y;
-    float scale;
+    int pad_x = 0, pad_y = 0;
+    float scale = 1.0f;
     if (letterBoxForSquare && modelShape.width == modelShape.height)
         modelInput = formatToSquare(modelInput, &pad_x, &pad_y, &scale);
 
+    // 2️⃣ Create blob
     cv::Mat blob;
     cv::dnn::blobFromImage(modelInput, blob, 1.0/255.0, modelShape, cv::Scalar(), true, false);
     net.setInput(blob);
 
+    // 3️⃣ Forward pass
     std::vector<cv::Mat> outputs;
     net.forward(outputs, net.getUnconnectedOutLayersNames());
 
-    int rows = outputs[0].size[1];
-    int dimensions = outputs[0].size[2];
+    // 4️⃣ Determine YOLOv8 shape
+    cv::Mat out = outputs[0];
+    int batch = out.size[0];
+    int numDims = out.size[1];   // usually 85 (x,y,w,h + 81 classes)
+    int numBoxes = out.size[2];  // e.g., 8400
 
-    bool yolov8 = true;
-    // yolov5 has an output of shape (batchSize, 25200, 85) (Num classes + box[x,y,w,h] + confidence[c])
-    // yolov8 has an output of shape (batchSize, 84,  8400) (Num classes + box[x,y,w,h])
-    if (dimensions > rows) // Check if the shape[2] is more than shape[1] (yolov8)
+    bool yolov8 = numDims > numBoxes;
+    if (yolov8)
     {
-        yolov8 = true;
-        rows = outputs[0].size[2];
-        dimensions = outputs[0].size[1];
-
-        outputs[0] = outputs[0].reshape(1, dimensions);
-        cv::transpose(outputs[0], outputs[0]);
+        out = out.reshape(1, numDims); // flatten dimensions
+        cv::transpose(out, out);       // shape: (numBoxes, numDims)
     }
-    float *data = (float *)outputs[0].data;
+
+    float* data = (float*)out.data;
+    int rows = out.rows;
+    int dimensions = out.cols;
 
     std::vector<int> class_ids;
     std::vector<float> confidences;
     std::vector<cv::Rect> boxes;
 
+    // 5️⃣ Loop through all detections
     for (int i = 0; i < rows; ++i)
     {
-        if (yolov8)
+        float x = data[i * dimensions + 0];
+        float y = data[i * dimensions + 1];
+        float w = data[i * dimensions + 2];
+        float h = data[i * dimensions + 3];
+
+        // class scores start at index 4
+        float* scores_ptr = data + i * dimensions + 4;
+        cv::Mat scores(1, classes.size(), CV_32FC1, scores_ptr);
+        cv::Point class_id;
+        double maxClassScore;
+        cv::minMaxLoc(scores, 0, &maxClassScore, 0, &class_id);
+
+        if (maxClassScore > modelScoreThreshold)
         {
-            float *classes_scores = data+4;
+            confidences.push_back((float)maxClassScore);
+            class_ids.push_back(class_id.x);
 
-            cv::Mat scores(1, classes.size(), CV_32FC1, classes_scores);
-            cv::Point class_id;
-            double maxClassScore;
+            int left = int((x - 0.5 * w - pad_x) / scale);
+            int top = int((y - 0.5 * h - pad_y) / scale);
+            int width = int(w / scale);
+            int height = int(h / scale);
 
-            minMaxLoc(scores, 0, &maxClassScore, 0, &class_id);
-
-            if (maxClassScore > modelScoreThreshold)
-            {
-                confidences.push_back(maxClassScore);
-                class_ids.push_back(class_id.x);
-
-                float x = data[0];
-                float y = data[1];
-                float w = data[2];
-                float h = data[3];
-
-                int left = int((x - 0.5 * w - pad_x) / scale);
-                int top = int((y - 0.5 * h - pad_y) / scale);
-
-                int width = int(w / scale);
-                int height = int(h / scale);
-
-                boxes.push_back(cv::Rect(left, top, width, height));
-            }
+            boxes.push_back(cv::Rect(left, top, width, height));
         }
-        else // yolov5
-        {
-            float confidence = data[4];
-
-            if (confidence >= modelConfidenceThreshold)
-            {
-                float *classes_scores = data+5;
-
-                cv::Mat scores(1, classes.size(), CV_32FC1, classes_scores);
-                cv::Point class_id;
-                double max_class_score;
-
-                minMaxLoc(scores, 0, &max_class_score, 0, &class_id);
-
-                if (max_class_score > modelScoreThreshold)
-                {
-                    confidences.push_back(confidence);
-                    class_ids.push_back(class_id.x);
-
-                    float x = data[0];
-                    float y = data[1];
-                    float w = data[2];
-                    float h = data[3];
-
-                    int left = int((x - 0.5 * w - pad_x) / scale);
-                    int top = int((y - 0.5 * h - pad_y) / scale);
-
-                    int width = int(w / scale);
-                    int height = int(h / scale);
-
-                    boxes.push_back(cv::Rect(left, top, width, height));
-                }
-            }
-        }
-
-        data += dimensions;
     }
 
+    // 6️⃣ Non-Maximum Suppression
     std::vector<int> nms_result;
     cv::dnn::NMSBoxes(boxes, confidences, modelScoreThreshold, modelNMSThreshold, nms_result);
 
-    std::vector<Detection> detections{};
-    for (unsigned long i = 0; i < nms_result.size(); ++i)
+    // 7️⃣ Build detection output
+    std::vector<Detection> detections;
+    for (int idx : nms_result)
     {
-        int idx = nms_result[i];
-
         Detection result;
         result.class_id = class_ids[idx];
         result.confidence = confidences[idx];
+        result.className = classes[result.class_id];
 
+        // random color for visualization
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<int> dis(100, 255);
-        result.color = cv::Scalar(dis(gen),
-                                  dis(gen),
-                                  dis(gen));
+        result.color = cv::Scalar(dis(gen), dis(gen), dis(gen));
 
-        result.className = classes[result.class_id];
         result.box = boxes[idx];
-
         detections.push_back(result);
     }
 
     return detections;
 }
+
 
 void Inference::loadClassesFromFile()
 {
