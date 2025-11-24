@@ -1,7 +1,7 @@
 
 #include "ModelEstimation/ModelEstimation.hpp"
 
-ModelEstimation::PersonDetector(const std::string &modelPath, float confThreshold, float nmsThreshold)
+ModelEstimation::ModelEstimation(const std::string &modelPath, float confThreshold, float nmsThreshold)
     : confThreshold(confThreshold), nmsThreshold(nmsThreshold) {
 
     auto path = std::to_string(DATA_PATH) + modelPath;
