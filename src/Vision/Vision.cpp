@@ -43,9 +43,6 @@ Vision::~Vision() {
 void Vision::update() {
     std::lock_guard lock(_frameMutex);
     _cap >> _frame;
-
-    auto v = getBlobSettings(_frame);
-    printBlobSettings(v);
 }
 
 cv::Mat Vision::getFrame() {
