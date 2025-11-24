@@ -40,7 +40,7 @@ private:
 
     std::atomic<bool> _stopFlag = false;
 
-    VisionModel _visionModel = POSE;
+    visionUtils::VisionModel _visionModel = visionUtils::POSE;
     bool _hasInitializedNet = false;
     cv::dnn::Net _net;
 };
