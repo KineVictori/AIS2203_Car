@@ -64,9 +64,10 @@ void Vision::update() {
         );
 
         _net.setInput(blob);
-        auto out = _net.forward();
+        static std::vector<cv::Mat> outputs;
+        _net.forward(outputs, _net.getUnconnectedOutLayersNames());
 
-        auto people = visionUtils::decodeYoloPose(out, _frame.size());
+        auto people = visionUtils::decodeYoloPose(outputs);
         std::cout << "Num people: " << people.size() << std::endl;
     }
 }
