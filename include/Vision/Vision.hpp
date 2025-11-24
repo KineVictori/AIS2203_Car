@@ -21,7 +21,7 @@ public:
     cv::Mat getFrame();
     bool isFinished();
 
-    void setExportFrame(cv::Mat frame);
+    void setExportFrame(const cv::Mat &frame);
 
 private:
     std::mutex _frameMutex;

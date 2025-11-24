@@ -33,8 +33,8 @@ Vision::~Vision() {
 
 }
 
-void Vision::setExportFrame(cv::Mat frame) {
-    std::lock_guard<std::mutex> lock(_frameMutex);
+void Vision::setExportFrame(const cv::Mat &frame) {
+    std::lock_guard<std::mutex> lock(_exportMutex);
     exportFrame = frame;
 }
 
