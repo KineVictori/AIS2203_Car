@@ -4,7 +4,7 @@
 ModelEstimation::ModelEstimation(const std::string &modelPath, float confThreshold, float nmsThreshold)
     : confThreshold(confThreshold), nmsThreshold(nmsThreshold) {
 
-    auto path = std::to_string(DATA_PATH) + modelPath;
+    auto path = std::string(DATA_PATH) + modelPath;
     net = cv::dnn::readNetFromONNX(path);
     net.setPreferableBackend(cv::dnn::DNN_BACKEND_CUDA);
     net.setPreferableTarget(cv::dnn::DNN_TARGET_CUDA);
