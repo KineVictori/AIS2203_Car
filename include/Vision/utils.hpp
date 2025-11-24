@@ -102,4 +102,15 @@ namespace visionUtils {
     }
 }
 
+inline visionUtils::Keypoint::Keypoint(float x, float y, float score) {
+    this->position = cv::Point2d(x, y);
+    this->conf = score;
+}
+
+inline visionUtils::Person::Person(cv::Rect2i _box, float _score, std::vector<visionUtils::Keypoint> &_kp) {
+    this->box = _box;
+    this->score = _score;
+    this->kp = _kp;
+}
+
 #endif //AIS2203_CAR_UTILS_HPP
