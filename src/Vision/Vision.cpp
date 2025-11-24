@@ -47,8 +47,15 @@ void Vision::update() {
 
     if (_visionModel == visionUtils::VisionModel::POSE) {
 
+        cv::Mat frame3;
+        if (_frame.channels() == 4) {
+            cv::cvtColor(_frame, frame3, cv::COLOR_BGRA2BGR);
+        } else {
+            frame3 = _frame;
+        }
+
         cv::Mat blob = cv::dnn::blobFromImage(
-            _frame,
+            frame3,
             1.0 / 255.0,        // scale factor
             cv::Size(640, 640), // input size
             cv::Scalar(0.0, 0.0, 0.0), // mean (optional)
