@@ -13,17 +13,13 @@
 
 #include <atomic>
 
-enum VisionModel {
-    NONE,
-    POSE
-};
+#include "utils.hpp"
 
 class Vision {
 public:
     Vision();
     ~Vision();
 
-    bool isOkay;
     void update();
     cv::Mat getFrame();
     bool isFinished();
@@ -44,7 +40,8 @@ private:
 
     std::atomic<bool> _stopFlag = false;
 
-
+    VisionModel _visionModel = POSE;
+    bool _hasInitializedNet = false;
     cv::dnn::Net _net;
 };
 

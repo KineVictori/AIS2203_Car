@@ -12,7 +12,6 @@ Vision::Vision(): _server(simple_socket::TCPServer(45678)),
     _cap = cv::VideoCapture(pipeline, cv::CAP_GSTREAMER);
     if(!_cap.isOpened()) {
         std::cerr << "Failed to open CSI camera\n";
-        isOkay = false;
     }
 
     _net = cv::dnn::readNetFromONNX(static_cast<std::string>(DATA_PATH) + "/ONNXModels/yolo11n-pose.onnx");
@@ -41,8 +40,28 @@ Vision::~Vision() {
 }
 
 void Vision::update() {
-    std::lock_guard lock(_frameMutex);
-    _cap >> _frame;
+    {
+        std::lock_guard lock(_frameMutex);
+        _cap >> _frame;
+    }
+
+    if (_visionModel == visionUtils::VisionModel::POSE) {
+
+        cv::Mat blob = cv::dnn::blobFromImage(
+            _frame,
+            1.0 / 255.0,        // scale factor
+            cv::Size(640, 640), // input size
+            cv::Scalar(0.0, 0.0, 0.0), // mean (optional)
+            true,               // swapRB (BGR->RGB)
+            false               // crop
+        );
+
+        _net.setInput(blob);
+        auto out = _net.forward();
+
+        auto people = visionUtils::decodeYoloPose(out, _frame.size());
+        std::cout << "Num people: " << people.size() << std::endl;
+    }
 }
 
 cv::Mat Vision::getFrame() {
