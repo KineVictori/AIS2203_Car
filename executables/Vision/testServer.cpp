@@ -27,8 +27,12 @@ int main() {
     while(!vision.isFinished()) {
         vision.update();
         auto frame = vision.getFrame();
-        auto results = modelEstimation.detect(frame);
-        printDetections(results);
+
+        try {
+            auto results = modelEstimation.detect(frame);
+            printDetections(results);
+        } catch (...) {}
+
 
         // If connected to a display, you may uncomment these lines.
         /*auto frame = vision.getFrame();
