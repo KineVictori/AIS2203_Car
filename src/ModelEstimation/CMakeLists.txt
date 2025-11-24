@@ -3,6 +3,7 @@ find_package(Threads REQUIRED)
 
 set(SHARED_SOURCES
         ModelEstimation.cpp
+        inference.cpp
 )
 
 add_library(modelEstimationLib ${SHARED_SOURCES})

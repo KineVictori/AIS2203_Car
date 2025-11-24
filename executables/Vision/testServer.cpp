@@ -1,39 +1,24 @@
 
 #include "Vision/Vision.hpp"
 #include "ModelEstimation/ModelEstimation.hpp"
+#include "ModelEstimation/inference.hpp"
 
-void printDetections(const std::vector<cv::Rect>& boxes) {
-    if (boxes.empty()) {
-        std::cout << "No people detected.\n";
-        return;
-    }
-
-    std::cout << "Detected " << boxes.size() << " people:\n";
-    for (size_t i = 0; i < boxes.size(); ++i) {
-        const auto& box = boxes[i];
-        std::cout << "Person " << i+1 << ": "
-                  << "x=" << box.x << ", y=" << box.y
-                  << ", width=" << box.width << ", height=" << box.height
-                  << "\n";
-    }
-}
 
 int main() {
 
     Vision vision;
 
-    ModelEstimation modelEstimation{"/ONNXModels/yolo11n.onnx"};
+    std::string path = std::string(DATA_PATH) + "/ONNXModels/yolov8s.onnx";
+    Inference inference{path, {640, 480}};
 
     while(!vision.isFinished()) {
         vision.update();
         auto frame = vision.getFrame();
 
         try {
-            if (frame.channels() == 4) {
-                cv::cvtColor(frame, frame, cv::COLOR_BGRA2BGR);
-            }
-            auto results = modelEstimation.detect(frame);
-            printDetections(results);
+            std::vector<Detection> output = inference.runInference(frame);
+            int detections = output.size();
+            std::cout << "Number of detections:" << detections << std::endl;
         } catch (...) {}
 
 
