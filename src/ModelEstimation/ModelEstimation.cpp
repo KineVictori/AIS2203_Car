@@ -17,9 +17,26 @@ std::vector<cv::Rect> ModelEstimation::detect(const cv::Mat &frame) {
 
     std::vector<cv::Mat> outputs;
     net.forward(outputs, net.getUnconnectedOutLayersNames());
+    for (size_t i = 0; i < outputs.size(); ++i) {
+        std::cout << "Output " << i << " dims: ";
+        for (int d = 0; d < outputs[i].dims; ++d)
+            std::cout << outputs[i].size[d] << " ";
+        std::cout << std::endl;
+    }
 
     std::vector<cv::Rect> boxes;
     std::vector<float> confidences;
+
+    {
+        float* data = (float*)outputs[0].data;
+        int num_preds = 8400;
+        int num_channels = 84;
+
+        for (int i = 0; i < 10; ++i) {
+            float objectness = data[i*num_channels + 4];
+            std::cout << "Prediction " << i << ": objectness=" << objectness << std::endl;
+        }
+    }
 
     // Typical YOLO output format: [x, y, w, h, conf, class_scores...]
     for (int i = 0; i < outputs[0].rows; i++) {
