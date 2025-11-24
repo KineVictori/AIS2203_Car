@@ -16,6 +16,8 @@ int main() {
         auto frame = vision.getFrame();
 
         try {
+            if (frame.channels() == 4) { cv::cvtColor(frame, frame, cv::COLOR_BGRA2BGR); }
+
             std::vector<Detection> output = inference.runInference(frame);
             int detections = output.size();
             std::cout << "Number of detections:" << detections << std::endl;
