@@ -21,14 +21,10 @@ public:
     cv::Mat getFrame();
     bool isFinished();
 
-    void setExportFrame(const cv::Mat &frame);
-
 private:
     std::mutex _frameMutex;
     cv::VideoCapture _cap;
     cv::Mat _frame;
-    cv::Mat exportFrame;
-    std::mutex _exportMutex;
 
     simple_socket::TCPServer _server;
     std::thread _serverThread;
