@@ -33,6 +33,12 @@ Vision::~Vision() {
 
 }
 
+void Vision::setExportFrame(cv::Mat frame) {
+    std::lock_guard<std::mutex> lock(_frameMutex);
+    exportFrame = frame;
+}
+
+
 void Vision::update() {
     std::lock_guard lock(_frameMutex);
     _cap >> _frame;
@@ -54,7 +60,13 @@ void Vision::socketHandler(std::unique_ptr<simple_socket::SimpleConnection> conn
 
     try {
         while (!_stopFlag) {
-            auto frame = getFrame();
+            // auto frame = getFrame();
+            cv::Mat frame;
+            {
+                std::lock_guard lock(_exportMutex);
+                frame = exportFrame;
+            }
+
             std::vector<uchar> buf;
             cv::imencode(".jpg", frame, buf);
 

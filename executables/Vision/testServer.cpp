@@ -38,9 +38,10 @@ int main() {
                 cv::Rect textBox(box.x, box.y - 40, textSize.width + 10, textSize.height + 20);
 
                 std::cout << classString << std::endl;
-                //cv::rectangle(frame, textBox, color, cv::FILLED);
-                //cv::putText(frame, classString, cv::Point(box.x + 5, box.y - 10), cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0), 2, 0);
+                cv::rectangle(frame, textBox, color, cv::FILLED);
+                cv::putText(frame, classString, cv::Point(box.x + 5, box.y - 10), cv::FONT_HERSHEY_DUPLEX, 1, cv::Scalar(0, 0, 0), 2, 0);
             }
+            vision.setExportFrame(frame);
         } catch (...) {}
 
 
